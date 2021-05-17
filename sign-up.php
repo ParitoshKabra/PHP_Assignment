@@ -26,9 +26,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             $showAlert = true;
         } else {
+            session_unset();
             session_destroy();
         }
     } else {
+        session_unset();
         session_destroy();
     }
 }
@@ -50,6 +52,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         * {
             margin: 0;
             padding: 0;
+        }
+
+        .hidden {
+            display: none;
         }
 
         #container {
@@ -124,6 +130,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             display: block;
 
         }
+
+        .cancel {
+            background-color: transparent;
+            outline: none;
+            border: none;
+            font-weight: bold;
+            font-size: 18px;
+            margin-left: 20px;
+        }
     </style>
 </head>
 
@@ -136,16 +151,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ?>
     <div id="container">
 
-        <form action="sign-up.php" method="post">
+        <form action="sign-up.php" method="post" onsubmit="return ajaxDb();">
             <div class="element"><label class="label" for="name">Username</label>
-                <input class="inputF" name="username" type="text" id="name" onkeypress="ajaxDb()">
+                <input class="inputF" name="username" type="text" id="name">
             </div>
             <span class="toggleSuccess" id="existUser"></span>
-            <span class="error"></span>
+            <span class="error"><button class='cancel' onclick='func()'>&times;</button></span>
             <div class="element"><label class="label" for="phone">Phone</label>
                 <input class="inputF" name="phone" type="text" id="phone">
             </div>
-            <span class="error"></span>
+            <span class="error"><button class='cancel' onclick='func()'>&times;</button></span>
 
             <div class="element">
                 <label for="gender">Gender:</label><select name="gender" id="gender">
@@ -158,15 +173,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="element"><label class="label" for="email">Email</label>
                 <input class="inputF" name="email" type="text" id="email">
             </div>
-            <span class="error"></span>
+            <span class="error"><button class='cancel' onclick='func()'>&times;</button></span>
             <div class="element"><label class="label" for="password">Password</label>
                 <input class="inputF" name="passwd" type="password" id="password">
             </div>
-            <span class="error"></span>
+            <span class="error"><button class='cancel' onclick='func()'>&times;</button></span>
             <div class="element"><label class="label" for="cword">Confirm Password</label>
                 <input class="inputF" type="password" id="cword">
             </div>
-            <span class="error"></span>
+            <span class="error"><button class='cancel' onclick='func()'>&times;</button></span>
             <div class="element1">
                 <label for="remember" id="labelSpecial">Remember Me</label>
                 <input type="checkbox" name="remember" value="Remember Me">
@@ -177,24 +192,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 <script>
+    document.getElementById('name').addEventListener('input', () => {
+        ajaxDb();
+    });
+
+
     function ajaxDb() {
         let xhr = new XMLHttpRequest();
         let userExist = document.getElementById('existUser');
-        let value = document.getElementById('iname').value;
+        let value = document.getElementById('name').value;
         let data = {
-            "username": value
-        }
+            username: value
+        };
+        let textnode;
         console.log(data);
         xhr.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 console.log(this.response);
                 let textnode = this.response;
+
                 userExist.innerHTML = textnode;
             }
         }
         xhr.open('POST', "test.php", true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.send(JSON.stringify(data));
+        if (textnode == "Username already exist!") {
+            return false;
+        } else {
+            return true;
+        }
     }
 </script>
 <script src="signupScript.js"></script>
