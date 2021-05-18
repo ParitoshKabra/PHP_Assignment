@@ -6,8 +6,7 @@ if (isset($_COOKIE['remember'])) {
     if (isset($_SESSION['key'])) {
         echo $_SESSION['key'];
         if ($_COOKIE['remember'] == $_SESSION['key']) {
-            echo $_COOKIE['PHPSESSID'];
-            header('location: welcome.php');
+            header('location: users.php');
         } else {
             session_unset();
             session_destroy();
@@ -29,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION["user"] = $username;
                 $_SESSION["loggedin"] = true;
 
-                header("location: welcome.php");
+                header("location: profile.php");
             } else {
                 session_unset();
                 session_destroy();
@@ -62,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="icons.png" type="image/x-icon">
+    <link rel="shortcut icon" href="images/icons.png" type="image/x-icon">
     <title>Login</title>
     <style>
         * {
