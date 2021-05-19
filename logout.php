@@ -4,9 +4,10 @@ include("connect.php");
 setcookie("PHPSESSID", $_COOKIE["PHPSESSID"], time() - 3600, "/");
 setcookie("remember", $_SESSION['key'], time() - 3600, "/");
 session_destroy();
-echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center'>You have been logged out successfully</span>";
+echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center'>You have been logged out successfully</span><br><br>";
+echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center'>Redirecting to Sign-In page ...</span><br><br>";
 
-header('Refresh: 3; URL=welcome.php');
+header('Refresh: 1; URL=index.php');
 ?>
 <!-- <!DOCTYPE html>
 <html lang="en">

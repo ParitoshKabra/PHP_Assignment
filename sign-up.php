@@ -3,6 +3,9 @@ session_start();
 include("connect.php");
 
 $showAlert = false;
+if (isset($_SESSION['user'])) {
+    header("location : index.php");
+}
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $username = $_POST["username"];
@@ -13,9 +16,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = password_hash($passplain, PASSWORD_DEFAULT);
     $sql = "INSERT INTO usersPro(username, password, email, gender, phone) VALUES('$username', '$password','$email','$gender','$phone')";
     $result = mysqli_query($conn, $sql);
+    $sql2 = "SELECT id FROM usersPro WHERE username='$username'";
+    $result2 = mysqli_query($conn, $sql2);
+    $row = $result2->fetch_assoc();
     if ($result) {
+
         $_SESSION['key'] = 'pkadminsys&' . $username . '@007registered';
         $_SESSION['user'] = $username;
+        $_SESSION['check'] = $row['id'];
         $sess = $_SESSION['key'];
         $sqlUpdate = "UPDATE usersPro SET session_key='$sess' WHERE username='$username'";
         $resultUpdate = mysqli_query($conn, $sqlUpdate);
@@ -157,11 +165,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input class="inputF" name="username" type="text" id="name">
             </div>
             <span class="toggleSuccess" id="existUser"></span>
-            <span class="error"><button class='cancel' onclick='func()'>&times;</button></span>
+            <span class="error"></span>
+
             <div class="element"><label class="label" for="phone">Phone</label>
                 <input class="inputF" name="phone" type="text" id="phone">
             </div>
-            <span class="error"><button class='cancel' onclick='func()'>&times;</button></span>
+            <span class="error"></span>
 
             <div class="element">
                 <label for="gender">Gender:</label><select name="gender" id="gender">
@@ -174,15 +183,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="element"><label class="label" for="email">Email</label>
                 <input class="inputF" name="email" type="text" id="email">
             </div>
-            <span class="error"><button class='cancel' onclick='func()'>&times;</button></span>
+            <span class="error"></span>
             <div class="element"><label class="label" for="password">Password</label>
                 <input class="inputF" name="passwd" type="password" id="password">
             </div>
-            <span class="error"><button class='cancel' onclick='func()'>&times;</button></span>
+            <span class="error"></span>
             <div class="element"><label class="label" for="cword">Confirm Password</label>
                 <input class="inputF" type="password" id="cword">
             </div>
-            <span class="error"><button class='cancel' onclick='func()'>&times;</button></span>
+            <span class="error"></span>
             <div class="element1">
                 <label for="remember" id="labelSpecial">Remember Me</label>
                 <input type="checkbox" name="remember" value="Remember Me">

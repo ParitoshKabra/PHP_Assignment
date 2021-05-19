@@ -14,6 +14,9 @@ if (isset($_COOKIE['remember'])) {
             header('location: index.php');
         }
     }
+    // else {
+    //     header('location: users.php');
+    // } ---> my cookies were not getting disabled  so include this if it works in your browser.
 }
 $err = false;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -28,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION["user"] = $username;
                 $_SESSION["loggedin"] = true;
 
-                header("location: profile.php");
+                header("location: users.php");
             } else {
                 session_unset();
                 session_destroy();

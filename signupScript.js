@@ -21,14 +21,13 @@ let labels = {
     cword: "form. Passowrd should match when confirmed",
 };
 let errorP = document.querySelectorAll('.error');
+console.log(errorP);
 let error = {
     name: errorP[0],
     phone: errorP[1],
-    age: errorP[2],
-    email: errorP[3],
-    password: errorP[4],
-    cword: errorP[5],
-    city: errorP[6]
+    email: errorP[2],
+    password: errorP[3],
+    cword: errorP[4],
 }
 let inputs = document.querySelectorAll('.inputF');
 
@@ -45,7 +44,7 @@ function regCheck() {
     }
 }
 document.querySelectorAll('.inputF').forEach(item => {
-    item.addEventListener('change', () => {
+    item.addEventListener('input', () => {
         error[item.id].innerHTML = "";
         if (item.value.length == 0) {
             error[item.id].style.display = 'none';

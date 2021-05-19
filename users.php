@@ -3,6 +3,13 @@ session_start();
 if (!isset($_SESSION['user']) || $_SESSION["loggedin"] != true) {
     header('location: index.php');
 }
+$path1 = "uploads/" . $_SESSION['user'] . ".jpg";
+$path2 = "uploads/" . $_SESSION['user'] . ".png";
+$path3 = "uploads/" . $_SESSION['user'] . ".bmp";
+$path4 = "uploads/" . $_SESSION['user'] . ".jpeg";
+if (!file_exists($path1) && !file_exists($path2) && !file_exists($path3) && !file_exists($path4)) {
+    $target_file  = "images/default.png";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,11 +27,72 @@ if (!isset($_SESSION['user']) || $_SESSION["loggedin"] != true) {
     <title>Sociophobia</title>
 </head>
 <style>
+    body {
+        height: 100vh;
+    }
 
+    nav {
+        font-size: 15px;
+        height: 10%;
+    }
+
+    .dropdown-menu {
+        background-color: #212529;
+    }
+
+    .dropdown-item {
+        font-size: 15px;
+        background-color: #212529;
+        color: white;
+        transition: all 1s;
+    }
+
+    .dropdown-item:hover {
+        background-color: rgb(244, 244, 244);
+    }
+
+    .container1 {
+        height: 90%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container1>table {
+        font-size: 15px;
+        color: #151719;
+        width: 100%;
+    }
+
+    #users th,
+    #users td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    #users tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    #users tr:hover {
+        background-color: #ddd;
+        cursor: pointer;
+    }
+
+
+
+    #users th {
+        font-size: 15px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        text-align: left;
+        background-color: #4CAF50;
+        color: white;
+    }
 </style>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">iSocio</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -54,6 +122,16 @@ if (!isset($_SESSION['user']) || $_SESSION["loggedin"] != true) {
             </form> -->
         </div>
     </nav>
+    <div class="container1">
+        <table id="users">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+
+
+        </table>
+    </div>
 </body>
 <script src="ajax.js"></script>
 

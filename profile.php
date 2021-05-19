@@ -1,7 +1,13 @@
 <?php
 include('connect.php');
 session_start();
-
+if (isset($_SESSION['profile']) && $_SESSION['profile'] == true) {
+    header('location: users.php');
+}
+$users = false;
+if (isset($_SESSION['profile']) && $_SESSION['profile'] == true) {
+    $users = true;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +21,7 @@ session_start();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/ad5664a170.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <link rel="shortcut icon" href="images/icons.png" type="image/x-icon">
     <title>Welcome <?php echo $_SESSION['user'] ?></title>
@@ -145,6 +152,12 @@ session_start();
         #upload>img {
             max-height: 100%;
         }
+
+        .error {
+            color: red;
+            margin-left: 10px;
+            font-size: 15px;
+        }
     </style>
 </head>
 
@@ -167,7 +180,9 @@ session_start();
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="#">Change Profile</a>
-                        <a class="dropdown-item" href="users.php">See All Users</a>
+                        <?php if ($users) {
+                            echo '<a class="dropdown-item" href="users.php">See All Users</a>';
+                        } ?>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="logout.php">Logout</a>
                     </div>
@@ -180,24 +195,24 @@ session_start();
         </div>
     </nav>
     <div class="profile-container">
-        <form action="upload.php" method="post" id="uploadProfile">
+        <form action="upload.php" method="post" id="uploadProfile" enctype="multipart/form-data" onsubmit="return false">
             <div id="profile">
                 <table>
                     <tr>
                         <td>Name:</td>
-                        <td><input type="text" name="name" id="name"></td>
+                        <td class="planted"><input type="text" class="changed" name="name" id="name"></td>
                     </tr>
                     <tr>
                         <td>Current Workplace/School:</td>
-                        <td><input type="text" name="work" id="email"></td>
+                        <td class="planted"><input type="text" class="changed" name="work" id="work"></td>
                     </tr>
                     <tr>
                         <td>About Yourself:</td>
-                        <td><textarea name="comment" id="comment" cols="30" rows="10"></textarea></td>
+                        <td class="planted"><textarea name="comment" class="changed" id="comment" cols="30" rows="10"></textarea></td>
                     </tr>
                     <tr>
                         <td>Date Of Birth:</td>
-                        <td><input type="text" name="date" id="date" onfocus="(this.type='date')"> </td>
+                        <td class="planted"><input type="text" class="changed" name="date" id="date" onfocus="(this.type='date')"> </td>
                     </tr>
 
                 </table>
@@ -205,14 +220,63 @@ session_start();
             <div id="profile-image">
 
                 <div id="upload">
-                    <label for="actual-btn" id="imageU"><img src="images/default.png" alt="default.png"></label>
-                    <input type="file" id="actual-btn" hidden />
+                    <label for="actual-btn" id="imageU"><img src="images/default.png" alt="default.png" id="previewImg"></label>
+                    <input type="file" id="actual-btn" name="fileToUpload" onchange="previewFile(this);" />
 
                 </div>
             </div>
         </form>
-        <button type="submit" id="submit-btn" form="uploadProfile">Save Profile</button>
+        <button type="submit" id="submit-btn" form="uploadProfile" name="submit">Save Profile</button>
     </div>
 </body>
+<script>
+    let input = document.querySelectorAll(".changed");
+    let store = document.querySelectorAll(".planted");
+
+    function previewFile(input) {
+        var file = $("input[type=file]").get(0).files[0];
+
+        if (file) {
+            var reader = new FileReader();
+
+            reader.onload = function() {
+                $("#previewImg").attr("src", reader.result);
+            }
+
+            reader.readAsDataURL(file);
+        }
+    }
+    let form = document.getElementById('uploadProfile');
+    let image = document.getElementById('actual-btn');
+
+    form.addEventListener('submit', event => {
+        let b = true;
+
+        for (let i = 0; i < input.length; i++) {
+            if (input[i].value.length == 0) {
+
+                let errorele = document.createElement('span');
+                errorele.setAttribute("class", "error");
+                errorele.textContent = "Field is required!!";
+                store[i].appendChild(errorele);
+                b = false;
+            }
+        }
+        setTimeout(() => {
+            let queries = document.querySelectorAll('td > span');
+            for (let index = 0; index < queries.length; index++) {
+                queries[index].remove();
+            }
+            if (b) {
+                form.setAttribute("onsubmit", "return true");
+
+                document.getElementById('submit-btn').click();
+            }
+        }, 1000);
+
+
+
+    });
+</script>
 
 </html>
