@@ -1,9 +1,11 @@
 <?php
 include("connect.php");
 session_start();
-if (isset($_COOKIE['remember'])) {
-
-    if (isset($_SESSION['key'])) {
+$setusernameDefault = "";
+if (!empty($_COOKIE['remember'])) {
+    echo 'hi';
+    if (!empty($_SESSION['key'])) {
+        echo 'hi';
         echo $_SESSION['key'];
         if ($_COOKIE['remember'] == $_SESSION['key']) {
             header('location: users.php');
@@ -13,9 +15,17 @@ if (isset($_COOKIE['remember'])) {
             setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() - 3600, "/");
             header('location: index.php');
         }
+    } else {
+        $id =  $_COOKIE['id'];
+        echo 'hi';
+        $sql1 = "SELECT * FROM usersPro WHERE id=$id";
+        $result1 = mysqli_query($conn, $sql1);
+        if (($result1)) {
+            while ($row = mysqli_fetch_assoc($result1)) {
+                $setusernameDefault = $row['username'];
+            }
+        }
     }
-    // else {
-    //     header('location: users.php');
     // } ---> my cookies were not getting disabled  so include this if it works in your browser.
 }
 $err = false;
@@ -24,10 +34,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["passwd"];
     $sql = "SELECT * FROM usersPro WHERE username='$username'";
     $result = mysqli_query($conn, $sql);
-    $total = mysqli_num_rows($result);
-    if ($total == 1) {
+    // print_r($result);
+    if (mysqli_num_rows($result)) {
         while ($row = mysqli_fetch_assoc($result)) {
             if (password_verify($password, $row['password'])) {
+                echo "entered";
                 $_SESSION["user"] = $username;
                 $_SESSION["loggedin"] = true;
 
@@ -41,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $err = true;
     }
-    if ($total) {
+    if ($result) {
         $_SESSION['key'] = 'pkadminsys&' . $username . '@007registered';
         $_SESSION['user'] = $username;
         $sess = $_SESSION['key'];
@@ -53,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         session_destroy();
     }
 }
-
+echo $setusernameDefault;
 ?>
 
 
@@ -167,7 +178,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ?>
         <h1>Sign-In to your account</h1>
         <form action="index.php" method="post">
-            <input type="text" name="username" id="iname" placeholder="Your Username">
+            <?php if ($setusernameDefault !== "") {
+                echo "<input type='text' name='username' id='iname' value='$setusernameDefault'>";
+            } else {
+                echo "<input type='text' name='username' id='iname' placeholder='Your Username'>";
+            } ?>
+
 
             <input type="password" name="passwd" id="ipasswd" placeholder="Password">
             <div class="element1">

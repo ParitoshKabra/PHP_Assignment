@@ -3,7 +3,7 @@ session_start();
 include("connect.php");
 
 $showAlert = false;
-if (isset($_SESSION['user'])) {
+if (empty($_SESSION['user'])) {
     header("location : index.php");
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['loggedin'] = true;
             if (!empty($_POST['remember'])) {
                 setcookie('remember', $sess, time() + 86400, '/');
+                setcookie('id', $_SESSION['check'], time() + 86400, "/");
             }
             $showAlert = true;
         } else {

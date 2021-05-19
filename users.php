@@ -3,13 +3,12 @@ session_start();
 if (!isset($_SESSION['user']) || $_SESSION["loggedin"] != true) {
     header('location: index.php');
 }
-$path1 = "uploads/" . $_SESSION['user'] . ".jpg";
-$path2 = "uploads/" . $_SESSION['user'] . ".png";
-$path3 = "uploads/" . $_SESSION['user'] . ".bmp";
-$path4 = "uploads/" . $_SESSION['user'] . ".jpeg";
-if (!file_exists($path1) && !file_exists($path2) && !file_exists($path3) && !file_exists($path4)) {
-    $target_file  = "images/default.png";
+
+$error = true;
+if (isset($_SESSION['user'])) {
+    $error = false;
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,7 +43,7 @@ if (!file_exists($path1) && !file_exists($path2) && !file_exists($path3) && !fil
         font-size: 15px;
         background-color: #212529;
         color: white;
-        transition: all 1s;
+        transition: all 500ms;
     }
 
     .dropdown-item:hover {
@@ -101,7 +100,7 @@ if (!file_exists($path1) && !file_exists($path2) && !file_exists($path3) && !fil
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="profile.php">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="users.php">Home <span class="sr-only">(current)</span></a>
                 </li>
 
                 <li class="nav-item dropdown">
@@ -109,8 +108,8 @@ if (!file_exists($path1) && !file_exists($path2) && !file_exists($path3) && !fil
                         Dropdown
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Change Profile</a>
-                        <a class="dropdown-item" href="users.php">See All Users</a>
+                        <a class="dropdown-item" href="profile.php">Update Profile</a>
+                        <a class="dropdown-item" href="seeprofile.php">See Profile</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="logout.php">Logout</a>
                     </div>
@@ -122,7 +121,9 @@ if (!file_exists($path1) && !file_exists($path2) && !file_exists($path3) && !fil
             </form> -->
         </div>
     </nav>
-    <div class="container1">
+    <?php
+    if (!$error) {
+        echo '<div class="container1">
         <table id="users">
             <tr>
                 <th>Name</th>
@@ -131,7 +132,10 @@ if (!file_exists($path1) && !file_exists($path2) && !file_exists($path3) && !fil
 
 
         </table>
-    </div>
+    </div>';
+    } else {
+        echo "<b style='color:red; font-size:20px; text-align: center;'>Profile is not completed yet!</b>";
+    } ?>
 </body>
 <script src="ajax.js"></script>
 

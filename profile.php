@@ -1,10 +1,7 @@
 <?php
 include('connect.php');
 session_start();
-if (isset($_SESSION['profile']) && $_SESSION['profile'] == true) {
-    header('location: users.php');
-}
-$users = false;
+
 if (isset($_SESSION['profile']) && $_SESSION['profile'] == true) {
     $users = true;
 }
@@ -179,10 +176,9 @@ if (isset($_SESSION['profile']) && $_SESSION['profile'] == true) {
                         Dropdown
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Change Profile</a>
-                        <?php if ($users) {
-                            echo '<a class="dropdown-item" href="users.php">See All Users</a>';
-                        } ?>
+
+                        <a class="dropdown-item" href="users.php">Welcome Page</a>
+
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="logout.php">Logout</a>
                     </div>

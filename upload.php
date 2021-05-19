@@ -47,13 +47,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $date = $_POST['date'];
         $work = $_POST['work'];
         $id = $_SESSION['check'];
-
-        $sql = "INSERT into usersProfile VALUES('$name','$work','$desc','$date','$id')";
-        $result = mysqli_query($conn, $sql);
-        if ($result) {
-            if ($file) {
-                $_SESSION['profile'] = true;
-                echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center'>You have been logged in successfully. Server will render a default profile pic :)</span><br><br>";
+        if (!isset($_SESSION['profile'])) {
+            $sql = "INSERT into usersProfile VALUES('$name','$work','$desc','$date','$id')";
+            $result = mysqli_query($conn, $sql);
+            if ($result) {
+                if ($file) {
+                    $_SESSION['profile'] = true;
+                    echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center'>You have been logged in successfully. Server will render a default profile pic :)</span><br><br>";
+                    echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center;transition:opacity 1s;'>Redirecting to main page...</span>";
+                    header("Refresh:2; URL=users.php");
+                }
+            }
+        } else {
+            $sql1 = "UPDATE usersProfile SET name='$name',work='$work',description='$desc', dateOb='$date' WHERE id = $id";
+            $result = mysqli_query($conn, $sql1);
+            if ($result) {
+                echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center'>Profile updated!</span><br><br>";
                 echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center;transition:opacity 1s;'>Redirecting to main page...</span>";
                 header("Refresh:2; URL=users.php");
             }
