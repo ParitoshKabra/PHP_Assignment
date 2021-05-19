@@ -160,7 +160,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ?>
     <div id="container">
 
-        <form action="sign-up.php" method="post" onsubmit="return ajaxDb();">
+        <form action="sign-up.php" method="post" id="myform" onsubmit="event.preventDefault(); checkFinal();">
             <div class="element"><label class="label" for="name">Username</label>
                 <input class="inputF" name="username" type="text" id="name">
             </div>
@@ -201,6 +201,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
 </body>
+<script src="signupScript.js"></script>
 <script>
     document.getElementById('name').addEventListener('input', () => {
         ajaxDb();
@@ -208,6 +209,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     function ajaxDb() {
+        let bool = true;
         let xhr = new XMLHttpRequest();
         let userExist = document.getElementById('existUser');
         let value = document.getElementById('name').value;
@@ -222,18 +224,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 let textnode = this.response;
 
                 userExist.innerHTML = textnode;
+                if (textnode != "Username already exist!") {
+                    bool = false;
+                }
             }
         }
         xhr.open('POST', "test.php", true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.send(JSON.stringify(data));
-        if (textnode == "Username already exist!") {
-            return false;
+        return bool;
+
+    }
+
+    function checkFinal() {
+        let b1 = ajaxDb();
+        let b2 = regCheck();
+        if (b1 && b2) {
+            document.getElementById('myform').setAttribute('onsubmit', 'return true');
+            document.getElementById('btn').click();
         } else {
-            return true;
+            alert('Fulfill all the requisites and then submit!');
         }
     }
 </script>
-<script src="signupScript.js"></script>
 
 </html>

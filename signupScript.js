@@ -7,14 +7,14 @@ let form = {
 };
 // console.log(form);
 let regExp = {
-    name: /[A-Za-z]+\W?[A-Za-z0-9]+$/,
+    name: /^.{6,}$/,
     phone: /^((\+?(91)?-?)|(0?))[6-9]\d{9}$/,
     email: /[^\s@\W]+\.?_?\.?[a-z]?@[^\s@\W]+\.?[^\s@\W]+?\.?[^\s@\W]+?\.?(com|in|edu)/,
     password: /(?=.{8,})(?=.*\d+)(?=.*\W+)(?=[A-Za-z]+)/,
     cword: /(?=.{8,})(?=.*\d+)(?=.*\W+)(?=[A-Za-z]+)/,
 };
 let labels = {
-    name: "username. Consider 'conqu@007', or paritosh007 as an example!!",
+    name: "username. Atleast 6 characters..",
     phone: "phone number",
     email: "email-syntax",
     password: "password format. Must include atleast a digit and special character and atleast 8 characters.",
@@ -39,9 +39,8 @@ function regCheck() {
             b = true;
         }
     }
-    if (b) {
-        alert("Some credentials are invalid or empty! Please recheck");
-    }
+    return !b;
+
 }
 document.querySelectorAll('.inputF').forEach(item => {
     item.addEventListener('input', () => {

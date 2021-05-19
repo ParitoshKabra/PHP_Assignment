@@ -50,11 +50,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $sql = "INSERT into usersProfile VALUES('$name','$work','$desc','$date','$id')";
         $result = mysqli_query($conn, $sql);
-        if ($result && !$file) {
-            $_SESSION['profile'] = true;
-            echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center'>You have been logged in successfully. Server will render a default profile pic :)</span><br><br>";
-            echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center;transition:opacity 1s;'>Redirecting to main page...</span>";
-            header("Refresh:2; URL=users.php");
+        if ($result) {
+            if ($file) {
+                $_SESSION['profile'] = true;
+                echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center'>You have been logged in successfully. Server will render a default profile pic :)</span><br><br>";
+                echo "<span style='color:green; font-size: 20px; font-weight:bold; text-align:center;transition:opacity 1s;'>Redirecting to main page...</span>";
+                header("Refresh:2; URL=users.php");
+            }
         }
     }
 }
