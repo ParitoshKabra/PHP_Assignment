@@ -3,9 +3,8 @@ session_start();
 include("connect.php");
 
 $showAlert = false;
-if (empty($_SESSION['user'])) {
-    header("location : index.php");
-}
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $username = $_POST["username"];
@@ -62,6 +61,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         * {
             margin: 0;
             padding: 0;
+        }
+
+        .error1 {
+            color: red;
+            margin-left: 10px;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .success1 {
+            color: green;
+            margin-left: 10px;
+            font-weight: bold;
+            font-size: 15px;
         }
 
         .hidden {
@@ -156,12 +169,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php
     if ($showAlert) {
         echo "<span class='success'>Your account is created!</span>";
-        header('Refresh: 3; URL=profile.php');
+        header('Refresh: 1; URL=profile.php');
     }
     ?>
     <div id="container">
 
-        <form action="sign-up.php" method="post" id="myform" onsubmit="event.preventDefault(); checkFinal();">
+        <form action="sign-up.php" method="post" id="myform" onsubmit="return false;">
             <div class="element"><label class="label" for="name">Username</label>
                 <input class="inputF" name="username" type="text" id="name">
             </div>
@@ -198,13 +211,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="checkbox" name="remember" value="Remember Me">
             </div>
 
-            <button id="btn" onclick="regCheck()" type="submit">Sign Up</button>
+            <button id="btn" onclick="regCheck(); checkFinal();" type="submit">Sign Up</button>
         </form>
     </div>
 </body>
 <script src="signupScript.js"></script>
 <script>
-    document.getElementById('name').addEventListener('input', () => {
+    document.getElementById('name').addEventListener('change', () => {
         ajaxDb();
     });
 
@@ -218,28 +231,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             username: value
         };
         let textnode;
-        console.log(data);
         xhr.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                console.log(this.response);
-                let textnode = this.response;
 
-                userExist.innerHTML = textnode;
-                if (textnode != "Username already exist!") {
+                console.log(this.responseText);
+                if (this.responseText == "OK") {
+                    userExist.setAttribute("class", "");
+                    userExist.setAttribute("class", "success1");
+                } else {
+                    userExist.setAttribute("class", "");
+                    userExist.setAttribute("class", "error1");
                     bool = false;
                 }
+                userExist.innerText = this.responseText;
+
             }
         }
         xhr.open('POST', "test.php", true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.send(JSON.stringify(data));
+        if (boolname && boolean) {
+            xhr.send(JSON.stringify(data));
+        }
+        console.log(boolname);
         return bool;
+
 
     }
 
     function checkFinal() {
         let b1 = ajaxDb();
         let b2 = regCheck();
+        console.log(b1 + " " + b2);
         if (b1 && b2) {
             document.getElementById('myform').setAttribute('onsubmit', 'return true');
             document.getElementById('btn').click();

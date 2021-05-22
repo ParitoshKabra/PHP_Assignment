@@ -2,8 +2,19 @@
 include('connect.php');
 session_start();
 
-if (isset($_SESSION['profile']) && $_SESSION['profile'] == true) {
-    $users = true;
+
+$valueStore = false;
+$array = null;
+if (isset($_SESSION['utility'])) {
+    $valueStore = true;
+    $array = $_SESSION['utility'];
+}
+$username = $_SESSION['user'];
+if (!isset($_SESSION['check']) || empty($_SESSION['check'])) {
+    $sql = "SELECT id FROM usersPro WHERE username='$username'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+    $_SESSION['check'] = $row['id'];
 }
 ?>
 <!DOCTYPE html>
@@ -146,8 +157,9 @@ if (isset($_SESSION['profile']) && $_SESSION['profile'] == true) {
             cursor: pointer;
         }
 
-        #upload>img {
+        #upload img {
             max-height: 100%;
+            width: 160px;
         }
 
         .error {
@@ -196,19 +208,27 @@ if (isset($_SESSION['profile']) && $_SESSION['profile'] == true) {
                 <table>
                     <tr>
                         <td>Name:</td>
-                        <td class="planted"><input type="text" class="changed" name="name" id="name"></td>
+                        <td class="planted"><input type="text" class="changed" name="name" id="name" <?php if ($valueStore) {
+                                                                                                            echo "value='$array[0]'";
+                                                                                                        } ?>></td>
                     </tr>
                     <tr>
                         <td>Current Workplace/School:</td>
-                        <td class="planted"><input type="text" class="changed" name="work" id="work"></td>
+                        <td class="planted"><input type="text" class="changed" name="work" id="work" <?php if ($valueStore) {
+                                                                                                            echo "value='$array[3]'";
+                                                                                                        } ?>></td>
                     </tr>
                     <tr>
                         <td>About Yourself:</td>
-                        <td class="planted"><textarea name="comment" class="changed" id="comment" cols="30" rows="10"></textarea></td>
+                        <td class="planted"><textarea name="comment" class="changed" id="comment" cols="30" rows="10" <?php if ($valueStore) {
+                                                                                                                            echo "placeholder='$array[1]'";
+                                                                                                                        } ?>></textarea></td>
                     </tr>
                     <tr>
                         <td>Date Of Birth:</td>
-                        <td class="planted"><input type="text" class="changed" name="date" id="date" onfocus="(this.type='date')"> </td>
+                        <td class="planted"><input type="text" class="changed" name="date" id="date" onfocus="(this.type='date')" <?php if ($valueStore) {
+                                                                                                                                        echo "value='$array[2]'";
+                                                                                                                                    } ?>> </td>
                     </tr>
 
                 </table>
@@ -242,6 +262,7 @@ if (isset($_SESSION['profile']) && $_SESSION['profile'] == true) {
             reader.readAsDataURL(file);
         }
     }
+
     let form = document.getElementById('uploadProfile');
     let image = document.getElementById('actual-btn');
 

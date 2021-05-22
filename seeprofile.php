@@ -1,30 +1,21 @@
 <?php
 include('connect.php');
 session_start();
-if (empty($_SESSION['user'])) {
+if (empty($_SESSION['user']) || !isset($_SESSION['user'])) {
     header('location: index.php');
 }
+
 $username = $_SESSION['user'];
-$path1 = "uploads/" . $_SESSION['user'] . ".jpg";
-$path2 = "uploads/" . $_SESSION['user'] . ".png";
-$path3 = "uploads/" . $_SESSION['user'] . ".bmp";
-$path4 = "uploads/" . $_SESSION['user'] . ".jpeg";
-if (!file_exists($path1) && !file_exists($path2) && !file_exists($path3) && !file_exists($path4)) {
-    $target_file  = "images/default.png";
-}
-if (file_exists($path1)) {
-    $target_file = $path1;
-} else if (file_exists($path2)) {
-    $target_file = $path2;
-} else if (file_exists($path3)) {
-    $target_file = $path3;
-} else if (file_exists($path4)) {
-    $target_file = $path4;
-}
 $sql = "SELECT name,work,description,dateOb FROM usersProfile JOIN usersPro ON usersPro.id=usersProfile.id AND username='$username'";
 $result = mysqli_query($conn, $sql);
 $row = mysqli_fetch_assoc($result);
 $variables = array($row['name'], $row['work'], $row['description'], $row['dateOb']);
+
+$id = $_SESSION['check'];
+$sql1 = "SELECT ProfilePic FROM usersProfile WHERE id='$id'";
+$result1 = mysqli_query($conn, $sql1);
+$row1 = mysqli_fetch_assoc($result1);
+$target_file = $row1['ProfilePic'];
 
 ?>
 

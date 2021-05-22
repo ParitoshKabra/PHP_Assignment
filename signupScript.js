@@ -30,13 +30,15 @@ let error = {
     cword: errorP[4],
 }
 let inputs = document.querySelectorAll('.inputF');
-
+let boolname = true;
+boolean = false;
 function regCheck() {
     let b = false;
 
     for (const key in form) {
-        if (!regExp[key].test(form[key].value)) {
+        if (!regExp[key].test(form[key].value || !boolname)) {
             b = true;
+            break;
         }
     }
     return !b;
@@ -49,7 +51,6 @@ document.querySelectorAll('.inputF').forEach(item => {
             error[item.id].style.display = 'none';
         } else {
             if (item.id == 'cword') {
-                console.log(item.id);
                 if (form['cword'].value != form['password'].value) {
                     let text = document.createTextNode("Invalid " + labels[item.id]);
                     error[item.id].appendChild(text);
@@ -58,7 +59,29 @@ document.querySelectorAll('.inputF').forEach(item => {
                     error[item.id].style.display = 'none';
 
                 }
-            } else if (!regExp[item.id].test(form[item.id].value)) {
+            }
+            else if (item.id == 'name') {
+                boolname = true;
+
+                let s = item.value;
+                let index = s.indexOf('\\');
+                if (index != -1) {
+                    let text = document.createTextNode("Do not include '\\' in username!");
+                    error[item.id].appendChild(text);
+                    error[item.id].style.display = 'block';
+                    boolname = false;
+                }
+                else if (!regExp[item.id].test(form[item.id].value)) {
+                    let text = document.createTextNode("Invalid, " + labels[item.id]);
+                    error[item.id].appendChild(text);
+                    error[item.id].style.display = 'block';
+                }
+                else {
+                    error[item.id].style.display = 'none';
+                    boolean = true;
+                }
+            }
+            else if (!regExp[item.id].test(form[item.id].value)) {
                 let text = document.createTextNode("Invalid, " + labels[item.id]);
                 error[item.id].appendChild(text);
                 error[item.id].style.display = 'block';

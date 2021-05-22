@@ -1,13 +1,13 @@
 <?php
 include('connect.php');
-$sql = "SELECT name,email FROM usersPro JOIN usersProfile ON usersPro.id=usersProfile.id";
+$sql = "SELECT DISTINCT username,email FROM usersPro JOIN usersProfile ON usersPro.id=usersProfile.id";
 $result = mysqli_query($conn, $sql);
 echo "{\"testdata\":[";
 $check = 1;
 $count = mysqli_num_rows($result);
 while ($row = mysqli_fetch_assoc($result)) {
     echo "{";
-    echo '"name":"' . $row["name"] . "\",";
+    echo '"username":"' . $row["username"] . "\",";
     echo '"email":"', $row["email"] . "\"";
     if ($check != $count) {
         echo "},";

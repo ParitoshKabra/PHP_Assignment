@@ -1,13 +1,18 @@
 <?php
+include('connect.php');
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION["loggedin"] != true) {
     header('location: index.php');
 }
 
 $error = true;
-if (isset($_SESSION['user'])) {
+if (isset($_SESSION['profile'])) {
     $error = false;
 }
+$username = $_SESSION['user'];
+$sql = "SELECT * FROM usersPro";
+$result = mysqli_query($conn, $sql);
+
 
 ?>
 <!DOCTYPE html>
@@ -26,8 +31,19 @@ if (isset($_SESSION['user'])) {
     <title>Sociophobia</title>
 </head>
 <style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
     body {
         height: 100vh;
+    }
+
+    .container {
+        width: 100%;
+        display: flex;
+        height: 90%;
     }
 
     nav {
@@ -51,11 +67,12 @@ if (isset($_SESSION['user'])) {
     }
 
     .container1 {
-        height: 90%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        height: 100%;
+        width: 50%;
+        margin-left: 0;
     }
+
+
 
     .container1>table {
         font-size: 15px;
@@ -87,6 +104,79 @@ if (isset($_SESSION['user'])) {
         text-align: left;
         background-color: #4CAF50;
         color: white;
+    }
+
+    #chatroom {
+        width: 50%;
+        display: flex;
+        background-color: #212529;
+        flex-direction: column;
+        position: relative;
+        display: none;
+
+    }
+
+    #send-message {
+        display: block;
+        padding: 10px;
+        width: 10%;
+        font-size: 10px;
+        font-weight: bold;
+        background-color: transparent;
+        outline: none;
+        border-radius: 4px;
+        border: 2px solid orangered;
+        background-color: white;
+        height: 100%;
+    }
+
+    #message {
+        font-size: 20px;
+        display: flex;
+        width: 90%;
+        height: 100%;
+    }
+
+    #send {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        height: 10%;
+
+    }
+
+    #user-chat {
+        height: 10%;
+        font-size: 20px;
+        color: white;
+        font-weight: bold;
+        border-bottom: 1px solid white;
+    }
+
+    #text {
+        height: 80%;
+        right: 0;
+        display: flex;
+    }
+
+    #text-message {
+        align-self: end;
+        color: lime;
+        list-style: none;
+        font-size: 15px;
+        width: 100%;
+        overflow: scroll;
+
+    }
+
+    .sent-messages {
+        color: lime;
+        text-align: end;
+    }
+
+    .received-messages {
+        color: white;
+
     }
 </style>
 
@@ -122,21 +212,131 @@ if (isset($_SESSION['user'])) {
         </div>
     </nav>
     <?php
+    echo '<div class="container">';
     if (!$error) {
         echo '<div class="container1">
-        <table id="users">
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-            </tr>
+            <table id="users">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>';
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo '<tr>';
+            echo '<td id ="' . $row['username'] . '">' . $row['username'] . '</td>';
+            echo '<td id ="' . $row['email'] . '">' . $row['email'] . '</td>';
+            echo '</tr>';
+        }
 
 
-        </table>
-    </div>';
+
+        echo '</table>
+        </div>';
     } else {
         echo "<b style='color:red; font-size:20px; text-align: center;'>Profile is not completed yet!</b>";
-    } ?>
+    }
+
+    echo '<div id="chatroom">
+        <div id="user-chat">
+
+        </div>
+        <div id="text">
+        <ul id="text-message">';
+
+    echo '</ul>
+        </div>
+        <div id="send">
+            <input name="message" id="message" ></input>
+            
+            <button type="button" id="send-message" onclick="func()">SEND</button>
+        </div>
+    </div>
+</div>'; ?>
 </body>
-<script src="ajax.js"></script>
+<script>
+    let users = document.querySelectorAll('tr');
+    let username;
+    let chat_other = document.getElementById('user-chat');
+    console.log(users);
+    for (let i = 1; i < users.length; i++) {
+        users[i].addEventListener('click', () => {
+            document.getElementById('chatroom').style.display = 'flex';
+            username = users[i].childNodes[0].textContent;
+            chat_other.innerHTML = `<span class='user'>${username}</span>`;
+            // setInterval(funcLive(), 1000);
+        });
+    }
+
+    function funcLive() {
+        let xhr = new XMLHttpRequest();
+        let receiver = chat_other.innerText;
+
+        chat = {
+            to: receiver,
+        }
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById('text-message').innerHTML = this.response;
+            }
+        }
+        xhr.open("POST", "chat.php", true);
+        xhr.setRequestHeader("Content", "application/json");
+        xhr.send(JSON.stringify(chat));
+    }
+
+
+    function func() {
+        let xhr = new XMLHttpRequest();
+        let receiver = chat_other.innerText;
+        let chat;
+
+        chat = {
+            chat_message: document.getElementById('message').value,
+            to: receiver,
+            time: startTime()
+        }
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.response);
+                document.getElementById('text-message').innerHTML = this.response;
+            }
+        }
+        xhr.open("POST", "chat.php", true);
+        xhr.setRequestHeader("Content", "application/json");
+        xhr.send(JSON.stringify(chat));
+    }
+    setInterval(funcLive, 1000);
+    document.getElementById('send-message').addEventListener('click', () => {
+        if (document.getElementById('message').value.length != 0) {
+            // let node = document.createTextNode(document.getElementById('message').value);
+            // let ele = document.createElement('li');
+            // ele.setAttribute("class", "sent-messages");
+            // ele.appendChild(node);
+            document.getElementById('message').value = "";
+            func();
+            // document.getElementById('text-message').append(ele);
+        }
+    });
+
+    function checkTime(i) {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    }
+
+    function startTime() {
+        var today = new Date();
+        var h = today.getHours();
+        var m = today.getMinutes();
+        var s = today.getSeconds();
+        // add a zero in front of numbers<10
+        m = checkTime(m);
+        s = checkTime(s);
+        return (h + ":" + m + ":" + s);
+
+    }
+</script>
 
 </html>

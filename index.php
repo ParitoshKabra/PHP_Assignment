@@ -3,10 +3,10 @@ include("connect.php");
 session_start();
 $setusernameDefault = "";
 if (!empty($_COOKIE['remember'])) {
-    echo 'hi';
+    // echo 'hi';
     if (!empty($_SESSION['key'])) {
-        echo 'hi';
-        echo $_SESSION['key'];
+        // echo 'hi';
+        // echo $_SESSION['key'];
         if ($_COOKIE['remember'] == $_SESSION['key']) {
             header('location: users.php');
         } else {
@@ -17,30 +17,40 @@ if (!empty($_COOKIE['remember'])) {
         }
     } else {
         $id =  $_COOKIE['id'];
-        echo 'hi';
         $sql1 = "SELECT * FROM usersPro WHERE id=$id";
         $result1 = mysqli_query($conn, $sql1);
         if (($result1)) {
             while ($row = mysqli_fetch_assoc($result1)) {
                 $setusernameDefault = $row['username'];
+                $SESSION['check'] = $row['id'];
             }
         }
     }
-    // } ---> my cookies were not getting disabled  so include this if it works in your browser.
+    // } ---> my cookies were  getting disabled  so include this if it works in your browser.
 }
 $err = false;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["username"];
-    $password = $_POST["passwd"];
+    $username = mysqli_real_escape_string($conn, $_POST["username"]);
+    $password = mysqli_real_escape_string($conn, $_POST["passwd"]);
     $sql = "SELECT * FROM usersPro WHERE username='$username'";
     $result = mysqli_query($conn, $sql);
     // print_r($result);
-    if (mysqli_num_rows($result)) {
+    if (mysqli_num_rows($result) ==  1) {
+        // print_r($result);
         while ($row = mysqli_fetch_assoc($result)) {
+            // print_r($row);
             if (password_verify($password, $row['password'])) {
                 echo "entered";
                 $_SESSION["user"] = $username;
                 $_SESSION["loggedin"] = true;
+                $_SESSION['profile'] = true;
+                $_SESSION['check'] = $row['id'];
+
+                if (!empty($_POST['remember'])) {
+                    $_SESSION['key'] = 'pkadminsys&' . $username . '@007registered';
+                    $sess = $_SESSION['key'];
+                    setcookie('remember', $sess, time() + 86400, '/');
+                }
 
                 header("location: users.php");
             } else {
@@ -52,19 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $err = true;
     }
-    if ($result) {
-        $_SESSION['key'] = 'pkadminsys&' . $username . '@007registered';
-        $_SESSION['user'] = $username;
-        $sess = $_SESSION['key'];
-        $_SESSION['loggedin'] = true;
-        if (!empty($_POST['remember'])) {
-            setcookie('remember', $sess, time() + 86400, '/');
-        }
-    } else {
-        session_destroy();
-    }
 }
-echo $setusernameDefault;
 ?>
 
 
