@@ -11,8 +11,11 @@ if (isset($_SESSION['utility'])) {
 }
 $username = $_SESSION['user'];
 if (!isset($_SESSION['check']) || empty($_SESSION['check'])) {
-    $sql = "SELECT id FROM usersPro WHERE username='$username'";
-    $result = mysqli_query($conn, $sql);
+    $sql = $conn->prepare("SELECT id FROM paritosh_user WHERE username=?");
+    $sql->bind_param("s", $username);
+    $sql->execute();
+
+    $result = $sql->get_result();
     $row = mysqli_fetch_assoc($result);
     $_SESSION['check'] = $row['id'];
 }

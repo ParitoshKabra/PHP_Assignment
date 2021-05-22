@@ -64,6 +64,7 @@ document.querySelectorAll('.inputF').forEach(item => {
                 boolname = true;
 
                 let s = item.value;
+                console.log(s);
                 let index = s.indexOf('\\');
                 if (index != -1) {
                     let text = document.createTextNode("Do not include '\\' in username!");

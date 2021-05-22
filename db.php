@@ -1,7 +1,8 @@
 <?php
 include('connect.php');
-$sql = "SELECT DISTINCT username,email FROM usersPro JOIN usersProfile ON usersPro.id=usersProfile.id";
-$result = mysqli_query($conn, $sql);
+$sql = $conn->prepare("SELECT DISTINCT username,email FROM paritosh_user JOIN paritosh_usersProfile ON paritosh_user.id=paritosh_usersProfile.id");
+$sql->execute();
+$result = $sql->get_result();
 echo "{\"testdata\":[";
 $check = 1;
 $count = mysqli_num_rows($result);

@@ -17,8 +17,10 @@ if (!empty($_COOKIE['remember'])) {
         }
     } else {
         $id =  $_COOKIE['id'];
-        $sql1 = "SELECT * FROM usersPro WHERE id=$id";
-        $result1 = mysqli_query($conn, $sql1);
+        $sql1 = $conn->prepare("SELECT * FROM paritosh_user WHERE id=?");
+        $sql1->bind_param("i", $id);
+        $sql1->execute();
+        $result1 = $sql1->get_result();
         if (($result1)) {
             while ($row = mysqli_fetch_assoc($result1)) {
                 $setusernameDefault = $row['username'];
@@ -32,9 +34,10 @@ $err = false;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = mysqli_real_escape_string($conn, $_POST["username"]);
     $password = mysqli_real_escape_string($conn, $_POST["passwd"]);
-    $sql = "SELECT * FROM usersPro WHERE username='$username'";
-    $result = mysqli_query($conn, $sql);
-    // print_r($result);
+    $sql = $conn->prepare("SELECT * FROM paritosh_user WHERE username=?");
+    $sql->bind_param("s", $username);
+    $sql->execute();
+    $result = $sql->get_result();
     if (mysqli_num_rows($result) ==  1) {
         // print_r($result);
         while ($row = mysqli_fetch_assoc($result)) {

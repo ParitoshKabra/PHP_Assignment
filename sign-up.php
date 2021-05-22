@@ -12,21 +12,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
     $phone = $_POST["phone"];
     $gender = $_POST["gender"];
+
+
+
+
+
+
+
     $password = password_hash($passplain, PASSWORD_DEFAULT);
-    $sql = "INSERT INTO usersPro(username, password, email, gender, phone) VALUES('$username', '$password','$email','$gender','$phone')";
-    $result = mysqli_query($conn, $sql);
-    $sql2 = "SELECT id FROM usersPro WHERE username='$username'";
-    $result2 = mysqli_query($conn, $sql2);
-    $row = $result2->fetch_assoc();
-    if ($result) {
+    $sql = $conn->prepare("INSERT INTO paritosh_user(username, password , email, gender, phone) VALUES(?,?,?,?,?)");
+    $sql->bind_param('sssss', $username, $password, $email, $gender, $phone);
+    $sql->execute();
+    $result = $sql->get_result();
+    $sql2 = $conn->prepare("SELECT id FROM paritosh_user WHERE username=?");
+    $sql2->bind_param('s', $username);
+    $sql2->execute();
+    $result2 = $sql2->get_result();
+    echo "What's this!";
+    $row = mysqli_fetch_assoc($result2);
+    if (mysqli_num_rows($result2)) {
 
         $_SESSION['key'] = 'pkadminsys&' . $username . '@007registered';
         $_SESSION['user'] = $username;
         $_SESSION['check'] = $row['id'];
         $sess = $_SESSION['key'];
-        $sqlUpdate = "UPDATE usersPro SET session_key='$sess' WHERE username='$username'";
-        $resultUpdate = mysqli_query($conn, $sqlUpdate);
-        if ($resultUpdate) {
+        $sqlUpdate = $conn->prepare("UPDATE paritosh_user SET session_key='$sess' WHERE username='$username'");
+        $sqlUpdate->execute();
+
+        if ($sqlUpdate->affected_rows > 0) {
             $_SESSION['loggedin'] = true;
             if (!empty($_POST['remember'])) {
                 setcookie('remember', $sess, time() + 86400, '/');
@@ -211,7 +224,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="checkbox" name="remember" value="Remember Me">
             </div>
 
-            <button id="btn" onclick="regCheck(); checkFinal();" type="submit">Sign Up</button>
+            <button id="btn" onclick="checkFinal(); " type="submit">Sign Up</button>
         </form>
     </div>
 </body>
@@ -242,6 +255,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     userExist.setAttribute("class", "");
                     userExist.setAttribute("class", "error1");
                     bool = false;
+                    console.log(bool);
                 }
                 userExist.innerText = this.responseText;
 
@@ -260,6 +274,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     function checkFinal() {
         let b1 = ajaxDb();
+        console.log(b1);
         let b2 = regCheck();
         console.log(b1 + " " + b2);
         if (b1 && b2) {

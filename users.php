@@ -10,7 +10,7 @@ if (isset($_SESSION['profile'])) {
     $error = false;
 }
 $username = $_SESSION['user'];
-$sql = "SELECT * FROM usersPro";
+$sql = "SELECT * FROM paritosh_user";
 $result = mysqli_query($conn, $sql);
 
 
@@ -337,6 +337,14 @@ $result = mysqli_query($conn, $sql);
         return (h + ":" + m + ":" + s);
 
     }
+    document.getElementById('message').addEventListener('keyup', event => {
+        if (event.code == 'Enter') {
+            document.getElementById('send-message').click();
+            document.getElementById('message').focus();
+
+        }
+
+    });
 </script>
 
 </html>

@@ -6,14 +6,19 @@ if (empty($_SESSION['user']) || !isset($_SESSION['user'])) {
 }
 
 $username = $_SESSION['user'];
-$sql = "SELECT name,work,description,dateOb FROM usersProfile JOIN usersPro ON usersPro.id=usersProfile.id AND username='$username'";
-$result = mysqli_query($conn, $sql);
+$sql = $conn->prepare("SELECT name,work,description,dateOb FROM paritosh_usersProfile JOIN paritosh_user ON paritosh_user.id=paritosh_usersProfile.id AND username=?");
+$sql->bind_param("s", $username);
+$sql->execute();
+$result = $sql->get_result();
 $row = mysqli_fetch_assoc($result);
 $variables = array($row['name'], $row['work'], $row['description'], $row['dateOb']);
 
+// print_r($_SESSION);
 $id = $_SESSION['check'];
-$sql1 = "SELECT ProfilePic FROM usersProfile WHERE id='$id'";
-$result1 = mysqli_query($conn, $sql1);
+$sql1 = $conn->prepare("SELECT ProfilePic FROM paritosh_usersProfile WHERE id=?");
+$sql1->bind_param("i", $id);
+$sql1->execute();
+$result1 = $sql1->get_result();
 $row1 = mysqli_fetch_assoc($result1);
 $target_file = $row1['ProfilePic'];
 

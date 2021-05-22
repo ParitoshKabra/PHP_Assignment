@@ -13,11 +13,15 @@ if (!empty($value['chat_message'])) {
     $message = mysqli_real_escape_string($conn, $value['chat_message']);
     $time = $value['time'];
 
-    $sql = "INSERT INTO chat(message, to1, from1, timestamp) VALUES('$message', '$r_username', '$username', '$time')";
-    $result = mysqli_query($conn, $sql);
+    $sql = $conn->prepare("INSERT INTO paritosh_chat(message, to1, from1, timestamp) VALUES(?,?,?,?)");
+    $sql->bind_param('ssss', $message, $r_username, $username, $time);
+    $sql->execute();
+    $result = $sql->get_result();
 }
-$sql1 = "SELECT * FROM chat WHERE from1='$username' AND to1='$r_username' UNION SELECT * FROM chat WHERE from1='$r_username' AND to1='$username' ORDER BY timestamp";
-$result1 = mysqli_query($conn, $sql1);
+$sql1 = $conn->prepare("SELECT * FROM paritosh_chat WHERE from1=? AND to1=? UNION SELECT * FROM paritosh_chat WHERE from1=? AND to1=? ORDER BY timestamp");
+$sql1->bind_param('ssss', $username, $r_username, $r_username, $username);
+$sql1->execute();
+$result1 = $sql1->get_result();
 if ($result1->num_rows > 0) {
     while ($row = mysqli_fetch_assoc($result1)) {
         if ($row['from1'] == $username) {
